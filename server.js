@@ -10,6 +10,7 @@ const PORT = 3000;
 const app = express();
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // set paths
 const uniqueId = Date.now();
@@ -27,48 +28,39 @@ app.get('/notes', (req, res) => {
 
 // route for api/notes
 app.get('/api/notes', (req, res) => {
-
     let jsonNotes = fs.readFileSync(path.join(__dirname, '/Develop/db/db.json'), 'utf8')
     return res.json(jsonNotes);
 });
 
 app.post('/api/notes', (req, res) => {
-    // attach unique id to new notes (date object?)
-    // const newNote = req.body;
-
+    // attach unique id to new notes
     noteObject = {
         title : req.body.title,
         text: req.body.text,
         ID: uniqueId
     }
+
+    // append new note to noteArray
     noteObject ? noteArray.unshift(noteObject) : console.error();
     
-    
+    // Writes noteArray to db.json
     fs.writeFileSync(path.join(__dirname, '/Develop/db/db.json'), JSON.stringify(noteArray));
 
+    // return new note
     console.log(noteObject);
 
-    res.json(noteObject);
-    
-    // append new note to db.json
-    
-    // return new note
-    
-    // create note delete function
-
-
+    return res.json(noteObject);
 });
 
-// Create post request for new note
-app.post('/api/notes:id', (req, res) => {
 
-    
+// create note delete function
+app.get('/api/notes:id', (req, res) => {
+    console.log('working')
 })
 
-console.log(fs.readFileSync(path.join(__dirname, '/Develop/db/db.json'), 'utf8'))
+// console.log(fs.readFileSync(path.join(__dirname, '/Develop/db/db.json'), 'utf8'))
 
 // Turn on server
 app.listen(PORT, () => {
     console.log('App lsitening to port ' + PORT);
-    console.log('The time is: ' + uniqueId);
 });
